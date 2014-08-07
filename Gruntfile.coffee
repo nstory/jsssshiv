@@ -5,6 +5,8 @@ module.exports = (grunt) ->
 
     coffee:
       build:
+        options:
+          sourceMap: true
         files: [
           expand: true
           ext: '.js'
@@ -19,9 +21,17 @@ module.exports = (grunt) ->
         options:
           specs: ['build/specs/*.spec.js']
 
+    watch:
+      options:
+        atBegin: true
+      test:
+        files: ['Gruntfile.coffee', 'src/**.coffee', 'specs/**.coffee']
+        tasks: ['test']
+
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-jasmine'
+  grunt.loadNpmTasks 'grunt-contrib-watch'
 
   grunt.registerTask 'test', ['build', 'jasmine']
   grunt.registerTask 'build', ['clean', 'coffee']
