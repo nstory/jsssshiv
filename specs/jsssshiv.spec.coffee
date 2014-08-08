@@ -29,6 +29,26 @@ describe 'JSSS Shiv', ->
           document.tags[tagName].color = "blue"
           expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
 
+  describe 'supports a variety of stylings', ->
+    examples = [
+      ['color', 'blue', 'color', 'rgb(0, 0, 255)']
+      ['bgColor', 'blue', 'background-color', 'rgb(0, 0, 255)']
+      ['fontSize', '42px', 'font-size', '42px']
+      ['fontStyle', 'normal', 'font-style', 'normal']
+      ['fontStyle', 'italic', 'font-style', 'italic']
+      ['fontStyle', 'oblique', 'font-style', 'italic']
+      ['fontStyle', 'small-caps', 'font-variant', 'small-caps']
+      ['lineHeight', '42px', 'line-height', '42px']
+      ['background', 'http://localhost/foobar.png', 'background-image', 'url(http://localhost/foobar.png)']
+    ]
+    for example in examples
+      do(example) ->
+        [jsssName, jsssValue, cssName, cssValue] = example
+        it "#{jsssName}=#{jsssValue}", ->
+          givenHTML '<h1 id="a">Foo</h1>'
+          document.tags.h1[jsssName] = jsssValue
+          expect(getCSS 'a', cssName).toEqual cssValue
+
   it 'allows capitalized tags', ->
     givenHTML  '<h1 id="a">Foo</h1>'
     document.tags.H1.color = "blue"

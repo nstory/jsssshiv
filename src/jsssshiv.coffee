@@ -25,10 +25,25 @@ class window.JSSSShiv
 
 class JSSSTag
   constructor: (@tagName, @style) ->
-    Object.defineProperty this, 'color',
-      set: (newValue) ->
-        style.innerHTML += "#{tagName} {color: #{newValue};}"
+    # 6.2 Font Properties
+    @defineProperty 'fontSize', (value) -> "font-size: #{value}"
+    @defineProperty 'fontStyle', (value) ->
+      if value == 'small-caps'
+        "font-variant: small-caps"
+      else
+        "font-style: #{value}"
+    @defineProperty 'lineHeight', (value) -> "line-height: #{value}"
 
-    Object.defineProperty this, 'bgColor',
+    # 6.3 Color and Background Properties
+    @defineProperty 'background', (value) -> "background-image: url(#{value})"
+    @defineProperty 'color', (value) -> "color: #{value}"
+    @defineProperty 'bgColor', (value) -> "background-color: #{value}"
+
+    # 6.4 Text Properties
+
+  defineProperty: (name, fn) ->
+    self = this
+    Object.defineProperty this, name,
       set: (newValue) ->
-        style.innerHTML += "#{tagName} {background-color: #{newValue};}"
+        rule = fn(newValue)
+        self.style.innerHTML += "#{self.tagName} {#{rule}}"
