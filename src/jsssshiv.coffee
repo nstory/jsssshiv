@@ -54,17 +54,26 @@ class JSSSTag
     for side in ['left', 'right', 'top', 'bottom']
       do(side) =>
         @defineProperty "#{side}Margin", (value) -> "margin-#{side}: #{value}"
+        @defineProperty "#{side}Padding", (value) -> "padding-#{side}: #{value}"
     @defineMethod 'margins', (top, right, bottom, left) ->
       "margin: #{top} #{right} #{bottom} #{left}"
+    @defineMethod 'paddings', (top, right, bottom, left) ->
+      "padding: #{top} #{right} #{bottom} #{left}"
+    @defineProperty 'borderStyle', (value) -> "border-style: #{value}"
+    @defineProperty 'borderWidth', (value) -> "border-width: #{value}"
+    @defineProperty 'width', (value) -> "width: #{value}"
+    @defineProperty 'height', (value) -> "height: #{value}"
+    @defineProperty 'float', (value) -> "float: #{value}"
+    @defineProperty 'clear', (value) -> "clear: #{value}"
 
   defineProperty: (name, fn) =>
     self = this
     Object.defineProperty this, name,
       set: (newValue) ->
         rule = fn(newValue)
-        self.style.innerHTML += "#{self.tagName} {#{rule}}"
+        self.style.innerHTML += "#{self.tagName} {#{rule};}"
 
   defineMethod: (name, fn) =>
     this[name] = =>
       rule = fn.apply(null, arguments)
-      @style.innerHTML += "#{@tagName} {#{rule}}"
+      @style.innerHTML += "#{@tagName} {#{rule};}"

@@ -52,6 +52,16 @@ describe 'JSSS Shiv', ->
       ['topMargin', '42px', 'margin-top', '42px']
       ['bottomMargin', '42px', 'margin-bottom', '42px']
       [((tag) -> tag.margins('1px', '2px', '3px', '4px')), 'margin-left', '4px']
+      ['leftPadding', '42px', 'padding-left', '42px']
+      ['rightPadding', '42px', 'padding-right', '42px']
+      ['topPadding', '42px', 'padding-top', '42px']
+      ['bottomPadding', '42px', 'padding-bottom', '42px']
+      ['borderStyle', 'solid', 'border-top-style', 'solid']
+      # ['borderWidth', '45px', 'border-top-width', '4px'] ???
+      ['width', '42px', 'width', '42px']
+      ['height', '42px', 'height', '42px']
+      ['float', 'left', 'float', 'left']
+      ['clear', 'both', 'clear', 'both']
     ]
 
     for example in examples
