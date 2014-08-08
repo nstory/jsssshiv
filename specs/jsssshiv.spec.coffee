@@ -14,9 +14,11 @@ describe 'JSSS Shiv', ->
   givenHTML = (html) ->
     container.innerHTML = html
 
-  getCSS = (id, prop) ->
+  getCSS = (id, pseudo, prop) ->
+    if !prop?
+      [pseudo, prop] = [null, pseudo]
     e = document.getElementById id
-    getComputedStyle(e).getPropertyValue prop
+    getComputedStyle(e, pseudo).getPropertyValue prop
 
   describe 'supports a variety of tags', ->
     # <body>, <html>, and table-related tags have been removed from this list
@@ -27,7 +29,7 @@ describe 'JSSS Shiv', ->
           givenHTML  "<#{tagName} id=\"a\">Foo</#{tagName}>"
           JSSSShiv.eval ->
             document.tags[tagName].color = "blue"
-          expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
+          expect(getCSS 'a', 'color').toBe 'rgb(0, 0, 255)'
 
   describe 'supports a variety of stylings', ->
     examples = [
@@ -85,49 +87,61 @@ describe 'JSSS Shiv', ->
             expect(getCSS 'a', cssName).toEqual cssValue
 
   it 'allows capitalized tags', ->
-    givenHTML  '<h1 id="a">Foo</h1>'
+    givenHTML '<h1 id="a">Foo</h1>'
     JSSSShiv.eval ->
       document.tags.H1.color = "blue"
-    expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
+    expect(getCSS 'a', 'color').toBe 'rgb(0, 0, 255)'
 
   it 'multiple styles may be applied', ->
     givenHTML '<h1 id="a">Foo</h1>'
     JSSSShiv.eval ->
       document.tags.H1.color = "blue"
       document.tags.H1.bgColor = "red"
-    expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
-    expect(getCSS 'a', 'background-color').toBe  'rgb(255, 0, 0)'
+    expect(getCSS 'a', 'color').toBe 'rgb(0, 0, 255)'
+    expect(getCSS 'a', 'background-color').toBe 'rgb(255, 0, 0)'
 
   it 'tag styles are inherited by children', ->
-    givenHTML  '<h1 id="a">Foo</h1>'
+    givenHTML '<h1 id="a">Foo</h1>'
     JSSSShiv.eval ->
       document.tags.BODY.color = "blue"
-    expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
+    expect(getCSS 'a', 'color').toBe 'rgb(0, 0, 255)'
 
   it 'class.all selector', ->
     givenHTML '<h1 id="a" class="foo">Foo</h1>'
     JSSSShiv.eval ->
       document.classes.foo.all.color = "blue"
-    expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
+    expect(getCSS 'a', 'color').toBe 'rgb(0, 0, 255)'
 
   it 'class.tag selector', ->
     givenHTML '<h1 id="a" class="foo">Foo</h1><h2 id="b" class="foo">Foo</h2>'
     JSSSShiv.eval ->
       document.classes.foo.h1.color = "blue"
       document.classes.foo.h2.color = "red"
-    expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
-    expect(getCSS 'b', 'color').toBe  'rgb(255, 0, 0)'
+    expect(getCSS 'a', 'color').toBe 'rgb(0, 0, 255)'
+    expect(getCSS 'b', 'color').toBe 'rgb(255, 0, 0)'
 
-  it 'allows id as selector', ->
+  it 'supports id as selector', ->
     givenHTML '<h1 id="a">Foo</h1>'
     JSSSShiv.eval ->
       document.ids.a.color = "blue"
-    expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
+    expect(getCSS 'a', 'color').toBe 'rgb(0, 0, 255)'
 
-  it 'allows descendant selectors with contextual()', ->
+  it 'supports descendant selectors with contextual()', ->
     givenHTML '<h1><span id="a"></span></h1><span id="b"></span>'
     JSSSShiv.eval ->
       document.tags.span.color = 'red'
       contextual(document.tags.h1, document.tags.span).color = 'blue'
-    expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
-    expect(getCSS 'b', 'color').toBe  'rgb(255, 0, 0)'
+    expect(getCSS 'a', 'color').toBe 'rgb(0, 0, 255)'
+    expect(getCSS 'b', 'color').toBe 'rgb(255, 0, 0)'
+
+  it 'supports first-line selector', ->
+    givenHTML '<p id="a">Fooooo bar</p>'
+    JSSSShiv.eval ->
+      document.tags.p.firstLine.color = 'blue'
+    expect(getCSS 'a', ':first-line', 'color').toBe 'rgb(0, 0, 255)'
+
+  it 'supports first-letter selector', ->
+    givenHTML '<p id="a">Fooooo bar</p>'
+    JSSSShiv.eval ->
+      document.tags.p.firstLetter.color = 'blue'
+    expect(getCSS 'a', ':first-letter', 'color').toBe 'rgb(0, 0, 255)'

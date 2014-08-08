@@ -58,7 +58,12 @@ window.JSSSShiv = class JSSSShiv
     idents
 
 class JSSSThing
-  constructor: (@selector, @styleElement)->
+  constructor: (@selector, @styleElement, pseudoElements=true)->
+    # 2.0 Typographical Elements (pseudo-elements)
+    if pseudoElements
+      @firstLine = new JSSSThing "#{@selector}:first-line", @styleElement, false
+      @firstLetter = new JSSSThing "#{@selector}:first-letter", @styleElement, false
+
     # 6.2 Font Properties
     @defineProperty 'fontSize', (value) -> "font-size: #{value}"
     @defineProperty 'fontStyle', (value) ->
