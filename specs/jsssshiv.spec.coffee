@@ -123,3 +123,11 @@ describe 'JSSS Shiv', ->
     JSSSShiv.eval ->
       document.ids.a.color = "blue"
     expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
+
+  it 'allows descendant selectors with contextual()', ->
+    givenHTML '<h1><span id="a"></span></h1><span id="b"></span>'
+    JSSSShiv.eval ->
+      document.tags.span.color = 'red'
+      contextual(document.tags.h1, document.tags.span).color = 'blue'
+    expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
+    expect(getCSS 'b', 'color').toBe  'rgb(255, 0, 0)'

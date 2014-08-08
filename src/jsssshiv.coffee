@@ -10,12 +10,20 @@ window.JSSSShiv = class JSSSShiv
     @_install (@_identifiers fn.toString())
     fn()
 
+  @contextual = =>
+    selector = (thing.selector for thing in arguments).join ' '
+    new JSSSThing(selector, @style)
+
   @_install = (identifiers) =>
     # create CSS <style> tag to hold translated styles
     if !@style?
       @style = document.createElement 'style'
       @style.id = 'jsss-shiv-styles'
       document.body.appendChild @style
+
+    # global function
+    if !window.contextual?
+      window.contextual = @contextual
 
     # populate document.tags with JSSSTag objects
     if !document.tags?
