@@ -104,11 +104,19 @@ describe 'JSSS Shiv', ->
       document.tags.BODY.color = "blue"
     expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
 
-  it 'allows class as selector', ->
+  it 'class.all selector', ->
     givenHTML '<h1 id="a" class="foo">Foo</h1>'
     JSSSShiv.eval ->
-      document.classes.foo.color = "blue"
+      document.classes.foo.all.color = "blue"
     expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
+
+  it 'class.tag selector', ->
+    givenHTML '<h1 id="a" class="foo">Foo</h1><h2 id="b" class="foo">Foo</h2>'
+    JSSSShiv.eval ->
+      document.classes.foo.h1.color = "blue"
+      document.classes.foo.h2.color = "red"
+    expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
+    expect(getCSS 'b', 'color').toBe  'rgb(255, 0, 0)'
 
   it 'allows id as selector', ->
     givenHTML '<h1 id="a">Foo</h1>'

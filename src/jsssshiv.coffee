@@ -1,12 +1,12 @@
 window.JSSSShiv = class JSSSShiv
   # https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/HTML5_element_list
-  tagNames = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'data', 'datalist', 'dd', 'del', 'details', 'dfn', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'math', 'menu', 'menuitem', 'meta', 'meter', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'summary', 'sup', 'svg', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr']
+  @tagNames = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'data', 'datalist', 'dd', 'del', 'details', 'dfn', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'math', 'menu', 'menuitem', 'meta', 'meter', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'summary', 'sup', 'svg', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr']
 
   @clear = =>
     if @style? then @style.innerHTML = ''
 
 
-  @eval = (fn) ->
+  @eval = (fn) =>
     @_install (@_identifiers fn.toString())
     fn()
 
@@ -20,7 +20,7 @@ window.JSSSShiv = class JSSSShiv
     # populate document.tags with JSSSTag objects
     if !document.tags?
       document.tags = {}
-      for tagName in tagNames
+      for tagName in @tagNames
         tag = new JSSSTag tagName, @style
         document.tags[tagName] = tag
         document.tags[tagName.toUpperCase()] = tag
@@ -29,13 +29,15 @@ window.JSSSShiv = class JSSSShiv
     if !document.classes?
       document.classes = {}
     for ident in identifiers
-      document.classes[ident] = new JSSSClass ident, @style
+      if !document.classes[ident]?
+        document.classes[ident] = new JSSSClass ident, @style
 
     # populate document.ids with JSSSId objects
     if !document.ids?
       document.ids = {}
     for ident in identifiers
-      document.ids[ident] = new JSSSId ident, @style
+      if !document.ids[ident]?
+        document.ids[ident] = new JSSSId ident, @style
 
     # bad implicit return is bad
     undefined
@@ -108,9 +110,11 @@ class JSSSTag extends JSSSThing
   constructor: (tagName, style) ->
     super "#{tagName}", style
 
-class JSSSClass extends JSSSThing
+class JSSSClass
   constructor: (className, style) ->
-    super ".#{className}", style
+    for tagName in JSSSShiv.tagNames
+      this[tagName] = new JSSSThing "#{tagName}.#{className}", style
+    this.all = new JSSSThing ".#{className}", style
 
 class JSSSId extends JSSSThing
   constructor: (id, style) ->
