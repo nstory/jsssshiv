@@ -54,10 +54,17 @@ class JSSSTag
     for side in ['left', 'right', 'top', 'bottom']
       do(side) =>
         @defineProperty "#{side}Margin", (value) -> "margin-#{side}: #{value}"
+    @defineMethod 'margins', (top, right, bottom, left) ->
+      "margin: #{top} #{right} #{bottom} #{left}"
 
-  defineProperty: (name, fn) ->
+  defineProperty: (name, fn) =>
     self = this
     Object.defineProperty this, name,
       set: (newValue) ->
         rule = fn(newValue)
         self.style.innerHTML += "#{self.tagName} {#{rule}}"
+
+  defineMethod: (name, fn) =>
+    this[name] = =>
+      rule = fn.apply(null, arguments)
+      @style.innerHTML += "#{@tagName} {#{rule}}"

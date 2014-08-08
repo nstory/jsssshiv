@@ -51,14 +51,23 @@ describe 'JSSS Shiv', ->
       ['rightMargin', '42px', 'margin-right', '42px']
       ['topMargin', '42px', 'margin-top', '42px']
       ['bottomMargin', '42px', 'margin-bottom', '42px']
+      [((tag) -> tag.margins('1px', '2px', '3px', '4px')), 'margin-left', '4px']
     ]
+
     for example in examples
       do(example) ->
-        [jsssName, jsssValue, cssName, cssValue] = example
-        it "#{jsssName}=#{jsssValue}", ->
-          givenHTML '<h1 id="a">Foo</h1>'
-          document.tags.h1[jsssName] = jsssValue
-          expect(getCSS 'a', cssName).toEqual cssValue
+        if example[0] instanceof Function
+          [jsssCode, cssName, cssValue] = example
+          it "#{jsssCode.toString().replace(/\s+/g, ' ')}", ->
+            givenHTML '<h1 id="a">Foo</h1>'
+            jsssCode(document.tags.h1)
+            expect(getCSS 'a', cssName).toEqual cssValue
+        else
+          [jsssName, jsssValue, cssName, cssValue] = example
+          it "#{jsssName}=#{jsssValue}", ->
+            givenHTML '<h1 id="a">Foo</h1>'
+            document.tags.h1[jsssName] = jsssValue
+            expect(getCSS 'a', cssName).toEqual cssValue
 
   it 'allows capitalized tags', ->
     givenHTML  '<h1 id="a">Foo</h1>'
