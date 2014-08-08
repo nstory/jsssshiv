@@ -2,30 +2,44 @@ window.JSSSShiv = class JSSSShiv
   # https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/HTML5_element_list
   tagNames = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'data', 'datalist', 'dd', 'del', 'details', 'dfn', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'math', 'menu', 'menuitem', 'meta', 'meter', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'summary', 'sup', 'svg', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr']
 
-  @uninstall = =>
-    if @style? then @style.parentElement.removeChild @style
+  @clear = =>
+    if @style? then @style.innerHTML = ''
 
-  @install = =>
-    self = this
 
+  @eval = (fn) ->
+    @_install (@_identifiers fn.toString())
+    fn()
+
+  @_install = (identifiers) =>
     # create CSS <style> tag to hold translated styles
-    @style = document.createElement 'style'
-    @style.id = 'jsss-shiv-styles'
-    document.body.appendChild @style
+    if !@style?
+      @style = document.createElement 'style'
+      @style.id = 'jsss-shiv-styles'
+      document.body.appendChild @style
 
     # populate document.tags with JSSSTag objects
-    document.tags = {}
-    for tagName in tagNames
-      tag = new JSSSTag tagName, @style
-      document.tags[tagName] = tag
-      document.tags[tagName.toUpperCase()] = tag
+    if !document.tags?
+      document.tags = {}
+      for tagName in tagNames
+        tag = new JSSSTag tagName, @style
+        document.tags[tagName] = tag
+        document.tags[tagName.toUpperCase()] = tag
 
     # populate document.classes with JSSSClass objects
-    document.classes = {}
-    # document.classes.foo = new JSSSClass 'foo', @style
+    if !document.classes?
+      document.classes = {}
+    for ident in identifiers
+      document.classes[ident] = new JSSSClass ident, @style
 
     # bad implicit return is bad
     undefined
+
+  @_identifiers = (text) =>
+    idents = []
+    re = /[\w\-]+/g
+    while (match = re.exec(text))
+      idents.push match[0]
+    idents
 
 class JSSSThing
   constructor: (@selector, @styleElement)->

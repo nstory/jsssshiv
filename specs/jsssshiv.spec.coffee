@@ -3,12 +3,11 @@ describe 'JSSS Shiv', ->
   container = undefined
 
   beforeEach ->
-    JSSSShiv.install()
     container = document.createElement "div"
     document.body.appendChild container
 
   afterEach ->
-    JSSSShiv.uninstall()
+    JSSSShiv.clear()
     container.parentElement.removeChild container
 
   # helper functions
@@ -26,7 +25,8 @@ describe 'JSSS Shiv', ->
       do(tagName) ->
         it tagName, ->
           givenHTML  "<#{tagName} id=\"a\">Foo</#{tagName}>"
-          document.tags[tagName].color = "blue"
+          JSSSShiv.eval ->
+            document.tags[tagName].color = "blue"
           expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
 
   describe 'supports a variety of stylings', ->
@@ -73,33 +73,39 @@ describe 'JSSS Shiv', ->
           [jsssCode, cssName, cssValue] = example
           it "#{jsssCode.toString().replace(/\s+/g, ' ')}", ->
             givenHTML '<h1 id="a">Foo</h1>'
-            jsssCode(document.tags.h1)
+            JSSSShiv.eval ->
+              jsssCode(document.tags.h1)
             expect(getCSS 'a', cssName).toEqual cssValue
         else
           [jsssName, jsssValue, cssName, cssValue] = example
           it "#{jsssName}=#{jsssValue}", ->
             givenHTML '<h1 id="a">Foo</h1>'
-            document.tags.h1[jsssName] = jsssValue
+            JSSSShiv.eval ->
+              document.tags.h1[jsssName] = jsssValue
             expect(getCSS 'a', cssName).toEqual cssValue
 
   it 'allows capitalized tags', ->
     givenHTML  '<h1 id="a">Foo</h1>'
-    document.tags.H1.color = "blue"
+    JSSSShiv.eval ->
+      document.tags.H1.color = "blue"
     expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
 
   it 'multiple styles may be applied', ->
     givenHTML '<h1 id="a">Foo</h1>'
-    document.tags.H1.color = "blue"
-    document.tags.H1.bgColor = "red"
+    JSSSShiv.eval ->
+      document.tags.H1.color = "blue"
+      document.tags.H1.bgColor = "red"
     expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
     expect(getCSS 'a', 'background-color').toBe  'rgb(255, 0, 0)'
 
   it 'tag styles are inherited by children', ->
     givenHTML  '<h1 id="a">Foo</h1>'
-    document.tags.BODY.color = "blue"
+    JSSSShiv.eval ->
+      document.tags.BODY.color = "blue"
     expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
 
   it 'allows class as selector', ->
     givenHTML '<h1 id="a" class="foo">Foo</h1>'
-    document.classes.foo.color = "blue"
+    JSSSShiv.eval ->
+      document.classes.foo.color = "blue"
     expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
