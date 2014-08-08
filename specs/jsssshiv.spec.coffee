@@ -98,3 +98,8 @@ describe 'JSSS Shiv', ->
     givenHTML  '<h1 id="a">Foo</h1>'
     document.tags.BODY.color = "blue"
     expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
+
+  it 'allows class as selector', ->
+    givenHTML '<h1 id="a" class="foo">Foo</h1>'
+    document.classes.foo.color = "blue"
+    expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'

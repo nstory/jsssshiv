@@ -1,4 +1,4 @@
-class window.JSSSShiv
+window.JSSSShiv = class JSSSShiv
   # https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/HTML5_element_list
   tagNames = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'data', 'datalist', 'dd', 'del', 'details', 'dfn', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'math', 'menu', 'menuitem', 'meta', 'meter', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'summary', 'sup', 'svg', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr']
 
@@ -20,13 +20,15 @@ class window.JSSSShiv
       document.tags[tagName] = tag
       document.tags[tagName.toUpperCase()] = tag
 
+    # populate document.classes with JSSSClass objects
+    document.classes = {}
+    # document.classes.foo = new JSSSClass 'foo', @style
+
     # bad implicit return is bad
     undefined
 
-class JSSSTag
-  constructor: (@tagName, @style) ->
-    self = this
-
+class JSSSThing
+  constructor: (@selector, @styleElement)->
     # 6.2 Font Properties
     @defineProperty 'fontSize', (value) -> "font-size: #{value}"
     @defineProperty 'fontStyle', (value) ->
@@ -72,13 +74,20 @@ class JSSSTag
     @defineProperty 'whiteSpace', (value) -> "white-space: #{value}"
 
   defineProperty: (name, fn) =>
-    self = this
     Object.defineProperty this, name,
-      set: (newValue) ->
+      set: (newValue) =>
         rule = fn(newValue)
-        self.style.innerHTML += "#{self.tagName} {#{rule};}"
+        @styleElement.innerHTML += "#{@selector} {#{rule};}"
 
   defineMethod: (name, fn) =>
     this[name] = =>
       rule = fn.apply(null, arguments)
-      @style.innerHTML += "#{@tagName} {#{rule};}"
+      @styleElement.innerHTML += "#{@selector} {#{rule};}"
+
+class JSSSTag extends JSSSThing
+  constructor: (tagName, style) ->
+    super "#{tagName}", style
+
+class JSSSClass extends JSSSThing
+  constructor: (className, style) ->
+    super ".#{className}", style
