@@ -25,6 +25,8 @@ class window.JSSSShiv
 
 class JSSSTag
   constructor: (@tagName, @style) ->
+    self = this
+
     # 6.2 Font Properties
     @defineProperty 'fontSize', (value) -> "font-size: #{value}"
     @defineProperty 'fontStyle', (value) ->
@@ -35,11 +37,23 @@ class JSSSTag
     @defineProperty 'lineHeight', (value) -> "line-height: #{value}"
 
     # 6.3 Color and Background Properties
-    @defineProperty 'background', (value) -> "background-image: url(#{value})"
     @defineProperty 'color', (value) -> "color: #{value}"
+    @defineProperty 'background', (value) -> "background-image: url(#{value})"
     @defineProperty 'bgColor', (value) -> "background-color: #{value}"
 
     # 6.4 Text Properties
+    @defineProperty 'wordSpacing', (value) -> "word-spacing: #{value}"
+    @defineProperty 'letterSpacing', (value) -> "letter-spacing: #{value}"
+    @defineProperty 'textDecoration', (value) -> "text-decoration: #{value}"
+    @defineProperty 'verticalAlign', (value) -> "vertical-align: #{value}"
+    @defineProperty 'textTransform', (value) -> "text-transform: #{value}"
+    @defineProperty 'textAlign', (value) -> "text-align: #{value}"
+    @defineProperty 'textIndent', (value) -> "text-indent: #{value}"
+
+    # 6.5 Box Properties
+    for side in ['left', 'right', 'top', 'bottom']
+      do(side) =>
+        @defineProperty "#{side}Margin", (value) -> "margin-#{side}: #{value}"
 
   defineProperty: (name, fn) ->
     self = this

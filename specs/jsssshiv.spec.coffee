@@ -40,6 +40,17 @@ describe 'JSSS Shiv', ->
       ['fontStyle', 'small-caps', 'font-variant', 'small-caps']
       ['lineHeight', '42px', 'line-height', '42px']
       ['background', 'http://localhost/foobar.png', 'background-image', 'url(http://localhost/foobar.png)']
+      ['wordSpacing', '4px', 'word-spacing', '4px']
+      ['letterSpacing', '4px', 'letter-spacing', '4px']
+      ['textDecoration', 'underline', 'text-decoration', 'underline']
+      ['verticalAlign', 'text-top', 'vertical-align', 'text-top']
+      ['textTransform', 'uppercase', 'text-transform', 'uppercase']
+      ['textAlign', 'center', 'text-align', 'center']
+      ['textIndent', '42px', 'text-indent', '42px']
+      ['leftMargin', '42px', 'margin-left', '42px']
+      ['rightMargin', '42px', 'margin-right', '42px']
+      ['topMargin', '42px', 'margin-top', '42px']
+      ['bottomMargin', '42px', 'margin-bottom', '42px']
     ]
     for example in examples
       do(example) ->
