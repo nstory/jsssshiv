@@ -31,6 +31,12 @@ window.JSSSShiv = class JSSSShiv
     for ident in identifiers
       document.classes[ident] = new JSSSClass ident, @style
 
+    # populate document.ids with JSSSId objects
+    if !document.ids?
+      document.ids = {}
+    for ident in identifiers
+      document.ids[ident] = new JSSSId ident, @style
+
     # bad implicit return is bad
     undefined
 
@@ -105,3 +111,7 @@ class JSSSTag extends JSSSThing
 class JSSSClass extends JSSSThing
   constructor: (className, style) ->
     super ".#{className}", style
+
+class JSSSId extends JSSSThing
+  constructor: (id, style) ->
+    super "##{id}", style

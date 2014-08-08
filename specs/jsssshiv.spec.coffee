@@ -109,3 +109,9 @@ describe 'JSSS Shiv', ->
     JSSSShiv.eval ->
       document.classes.foo.color = "blue"
     expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
+
+  it 'allows id as selector', ->
+    givenHTML '<h1 id="a">Foo</h1>'
+    JSSSShiv.eval ->
+      document.ids.a.color = "blue"
+    expect(getCSS 'a', 'color').toBe  'rgb(0, 0, 255)'
