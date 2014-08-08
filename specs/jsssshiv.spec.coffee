@@ -62,6 +62,9 @@ describe 'JSSS Shiv', ->
       ['height', '42px', 'height', '42px']
       ['float', 'left', 'float', 'left']
       ['clear', 'both', 'clear', 'both']
+      ['display', 'inline', 'display', 'inline']
+      ['listStyle', 'square', 'list-style-type', 'square']
+      ['whiteSpace', 'pre', 'white-space', 'pre']
     ]
 
     for example in examples

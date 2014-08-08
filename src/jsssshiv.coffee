@@ -66,6 +66,11 @@ class JSSSTag
     @defineProperty 'float', (value) -> "float: #{value}"
     @defineProperty 'clear', (value) -> "clear: #{value}"
 
+    # 6.6 Classification Properties
+    @defineProperty 'display', (value) -> "display: #{value}"
+    @defineProperty 'listStyle', (value) -> "list-style: #{value}"
+    @defineProperty 'whiteSpace', (value) -> "white-space: #{value}"
+
   defineProperty: (name, fn) =>
     self = this
     Object.defineProperty this, name,
