@@ -14,6 +14,8 @@ window.JSSSShiv = class JSSSShiv
     selector = (thing.selector for thing in arguments).join ' '
     new JSSSThing(selector, @style)
 
+  # create the properties under document and global function; passed-in
+  # identifiers will be added to the classes and ids objects
   @_install = (identifiers) =>
     # create CSS <style> tag to hold translated styles
     if !@style?
@@ -50,6 +52,8 @@ window.JSSSShiv = class JSSSShiv
     # bad implicit return is bad
     undefined
 
+  # pull out everything that looks like an id or class-name from the
+  # passed-in text
   @_identifiers = (text) =>
     idents = []
     re = /[\w\-]+/g

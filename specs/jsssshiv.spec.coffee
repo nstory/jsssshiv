@@ -145,3 +145,19 @@ describe 'JSSS Shiv', ->
     JSSSShiv.eval ->
       document.tags.p.firstLetter.color = 'blue'
     expect(getCSS 'a', ':first-letter', 'color').toBe 'rgb(0, 0, 255)'
+
+  xit 'supports apply', ->
+    givenHTML '<p id="a">Fooo bar</p>'
+    JSSSShiv.eval ->
+      fn = `function() {color = 'blue';}`
+      document.tags.p.apply = fn
+    expect(getCSS 'a', 'color').toBe 'rgb(0, 0, 255)'
+
+  xit 'supports inline <style> elements', ->
+    undefined
+
+  xit 'supports external stylesheets', ->
+    undefined
+
+  xit 'supports inline style attributes', ->
+    undefined
