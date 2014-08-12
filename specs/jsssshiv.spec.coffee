@@ -166,9 +166,16 @@ describe 'JSSS Shiv', ->
   xit 'supports external stylesheets', ->
     undefined
 
-  it 'supports inline style attributes', ->
+  it 'supports settings properties in inline style attributes', ->
     givenHTML """
     <span style="color='blue'" id="foo">Bar</span>
     """
     JSSSShiv.run()
     expect(getCSS 'foo', 'color').toBe 'rgb(0, 0, 255)'
+
+  it 'supports calling methods in inline style attributes', ->
+    givenHTML """
+    <span style="margins('42px', '0px', '0px', '0px')" id="foo">Bar</span>
+    """
+    JSSSShiv.run()
+    expect(getCSS 'foo', 'margin-top').toBe '42px'

@@ -11,9 +11,14 @@ window.JSSSShiv = class JSSSShiv
     fn()
 
   @run = =>
+    # style tags
     for style in document.getElementsByTagName 'style' when (/javascript/i).test style.type
       fn = new Function [], style.innerHTML
       @eval fn
+
+    # style attributes
+    for elem in document.getElementsByTagName '*' when elem.hasAttribute 'style'
+      @_apply elem, (elem.getAttribute 'style')
 
   @contextual = =>
     selector = (thing.selector for thing in arguments).join ' '
@@ -57,6 +62,33 @@ window.JSSSShiv = class JSSSShiv
     # bad implicit return is bad
     undefined
 
+  # applies style to element, where style is a string to be compiled and executed
+  @_apply = (elem, style) =>
+    argumentNames = []
+    argumentValues = []
+    argumentFunctions = []
+    cssRules = []
+    defineProperty = (name, fn) ->
+      argumentNames.push name
+      argumentValues.push undefined
+      argumentFunctions.push (newValue) ->
+        cssRules.push fn(newValue)
+    defineMethod = (name, fn) ->
+      argumentNames.push name
+      argumentValues.push ->
+        cssRules.push fn.apply(null, arguments)
+      argumentFunctions.push ->
+    stylings defineProperty, defineMethod
+    # enclose in a try catch block so errant styles don't kill everything
+    try
+      styleFn = new Function argumentNames, "#{style};return arguments;"
+      newValues = styleFn.apply(null, argumentValues)
+      for nv,idx in newValues when nv != undefined
+        argumentFunctions[idx](nv)
+      elem.setAttribute 'style', (cssRules.join ';')
+    catch error
+      undefined
+
   # pull out everything that looks like an id or class-name from the
   # passed-in text
   @_identifiers = (text) =>
@@ -68,54 +100,11 @@ window.JSSSShiv = class JSSSShiv
 
 class JSSSThing
   constructor: (@selector, @styleElement, pseudoElements=true)->
+    stylings @defineProperty, @defineMethod
     # 2.0 Typographical Elements (pseudo-elements)
     if pseudoElements
       @firstLine = new JSSSThing "#{@selector}:first-line", @styleElement, false
       @firstLetter = new JSSSThing "#{@selector}:first-letter", @styleElement, false
-
-    # 6.2 Font Properties
-    @defineProperty 'fontSize', (value) -> "font-size: #{value}"
-    @defineProperty 'fontStyle', (value) ->
-      if value == 'small-caps'
-        "font-variant: small-caps"
-      else
-        "font-style: #{value}"
-    @defineProperty 'lineHeight', (value) -> "line-height: #{value}"
-
-    # 6.3 Color and Background Properties
-    @defineProperty 'color', (value) -> "color: #{value}"
-    @defineProperty 'background', (value) -> "background-image: url(#{value})"
-    @defineProperty 'bgColor', (value) -> "background-color: #{value}"
-
-    # 6.4 Text Properties
-    @defineProperty 'wordSpacing', (value) -> "word-spacing: #{value}"
-    @defineProperty 'letterSpacing', (value) -> "letter-spacing: #{value}"
-    @defineProperty 'textDecoration', (value) -> "text-decoration: #{value}"
-    @defineProperty 'verticalAlign', (value) -> "vertical-align: #{value}"
-    @defineProperty 'textTransform', (value) -> "text-transform: #{value}"
-    @defineProperty 'textAlign', (value) -> "text-align: #{value}"
-    @defineProperty 'textIndent', (value) -> "text-indent: #{value}"
-
-    # 6.5 Box Properties
-    for side in ['left', 'right', 'top', 'bottom']
-      do(side) =>
-        @defineProperty "#{side}Margin", (value) -> "margin-#{side}: #{value}"
-        @defineProperty "#{side}Padding", (value) -> "padding-#{side}: #{value}"
-    @defineMethod 'margins', (top, right, bottom, left) ->
-      "margin: #{top} #{right} #{bottom} #{left}"
-    @defineMethod 'paddings', (top, right, bottom, left) ->
-      "padding: #{top} #{right} #{bottom} #{left}"
-    @defineProperty 'borderStyle', (value) -> "border-style: #{value}"
-    @defineProperty 'borderWidth', (value) -> "border-width: #{value}"
-    @defineProperty 'width', (value) -> "width: #{value}"
-    @defineProperty 'height', (value) -> "height: #{value}"
-    @defineProperty 'float', (value) -> "float: #{value}"
-    @defineProperty 'clear', (value) -> "clear: #{value}"
-
-    # 6.6 Classification Properties
-    @defineProperty 'display', (value) -> "display: #{value}"
-    @defineProperty 'listStyle', (value) -> "list-style: #{value}"
-    @defineProperty 'whiteSpace', (value) -> "white-space: #{value}"
 
   defineProperty: (name, fn) =>
     Object.defineProperty this, name,
@@ -141,3 +130,48 @@ class JSSSClass
 class JSSSId extends JSSSThing
   constructor: (id, style) ->
     super "##{id}", style
+
+stylings = (defineProperty, defineMethod) ->
+  # 6.2 Font Properties
+  defineProperty 'fontSize', (value) -> "font-size: #{value}"
+  defineProperty 'fontStyle', (value) ->
+    if value == 'small-caps'
+      "font-variant: small-caps"
+    else
+      "font-style: #{value}"
+  defineProperty 'lineHeight', (value) -> "line-height: #{value}"
+
+  # 6.3 Color and Background Properties
+  defineProperty 'color', (value) -> "color: #{value}"
+  defineProperty 'background', (value) -> "background-image: url(#{value})"
+  defineProperty 'bgColor', (value) -> "background-color: #{value}"
+
+  # 6.4 Text Properties
+  defineProperty 'wordSpacing', (value) -> "word-spacing: #{value}"
+  defineProperty 'letterSpacing', (value) -> "letter-spacing: #{value}"
+  defineProperty 'textDecoration', (value) -> "text-decoration: #{value}"
+  defineProperty 'verticalAlign', (value) -> "vertical-align: #{value}"
+  defineProperty 'textTransform', (value) -> "text-transform: #{value}"
+  defineProperty 'textAlign', (value) -> "text-align: #{value}"
+  defineProperty 'textIndent', (value) -> "text-indent: #{value}"
+
+  # 6.5 Box Properties
+  for side in ['left', 'right', 'top', 'bottom']
+    do(side) =>
+      defineProperty "#{side}Margin", (value) -> "margin-#{side}: #{value}"
+      defineProperty "#{side}Padding", (value) -> "padding-#{side}: #{value}"
+  defineMethod 'margins', (top, right, bottom, left) ->
+    "margin: #{top} #{right} #{bottom} #{left}"
+  defineMethod 'paddings', (top, right, bottom, left) ->
+    "padding: #{top} #{right} #{bottom} #{left}"
+  defineProperty 'borderStyle', (value) -> "border-style: #{value}"
+  defineProperty 'borderWidth', (value) -> "border-width: #{value}"
+  defineProperty 'width', (value) -> "width: #{value}"
+  defineProperty 'height', (value) -> "height: #{value}"
+  defineProperty 'float', (value) -> "float: #{value}"
+  defineProperty 'clear', (value) -> "clear: #{value}"
+
+  # 6.6 Classification Properties
+  defineProperty 'display', (value) -> "display: #{value}"
+  defineProperty 'listStyle', (value) -> "list-style: #{value}"
+  defineProperty 'whiteSpace', (value) -> "white-space: #{value}"
