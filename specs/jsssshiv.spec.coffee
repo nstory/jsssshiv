@@ -153,11 +153,22 @@ describe 'JSSS Shiv', ->
       document.tags.p.apply = fn
     expect(getCSS 'a', 'color').toBe 'rgb(0, 0, 255)'
 
-  xit 'supports inline <style> elements', ->
-    undefined
+  it 'supports inline <style> elements', ->
+    givenHTML """
+    <style type="text/javascript">
+    document.ids.foo.color = "blue";
+    </style>
+    <span id="foo">Bar</span>
+    """
+    JSSSShiv.run()
+    expect(getCSS 'foo', 'color').toBe 'rgb(0, 0, 255)'
 
   xit 'supports external stylesheets', ->
     undefined
 
-  xit 'supports inline style attributes', ->
-    undefined
+  it 'supports inline style attributes', ->
+    givenHTML """
+    <span style="color='blue'" id="foo">Bar</span>
+    """
+    JSSSShiv.run()
+    expect(getCSS 'foo', 'color').toBe 'rgb(0, 0, 255)'

@@ -7,6 +7,7 @@ JSSS (JavaScript-based Style Sheets) was an alternative to CSS proposed by Netsc
 This project is a polyfill allowing JSSS to be used in a modern browser. Basically, it converts JSSS into CSS.
 
 ## Limitations
+### Classes and IDs
 JSSS allows you to specific class and id-specific styles using syntax like:
 
 ```javascript
@@ -26,9 +27,12 @@ document.classes.warning.all.color = 'red';
 ```
 
 The following identifiers will be added to the `ids` and `classes` objects:
-`bring-out`, `warnings`, `document`, `classes`, `warning`, `all`, `color`, `red`.
+`bring-out`, `warning`, `document`, `classes`, `warning`, `all`, `color`, `red`.
 
 Though this will work in most cases, if the classes/ids are constructed dynamically, or if they are hidden behind function calls, you may see "Cannot read property..." errors.
+
+### Apply
+The JSSS spec details an apply property which allows a function to be passed into the style engine, and executed whenever a selector is matched. JSSShiv does not support this.
 
 ## License
 MIT

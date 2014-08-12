@@ -5,10 +5,15 @@ window.JSSSShiv = class JSSSShiv
   @clear = =>
     if @style? then @style.innerHTML = ''
 
-
+  # evaluate the passed-in function as a JS stylesheet
   @eval = (fn) =>
     @_install (@_identifiers fn.toString())
     fn()
+
+  @run = =>
+    for style in document.getElementsByTagName 'style' when (/javascript/i).test style.type
+      fn = new Function [], style.innerHTML
+      @eval fn
 
   @contextual = =>
     selector = (thing.selector for thing in arguments).join ' '
