@@ -125,6 +125,7 @@ class JSSSClass
   constructor: (className, style) ->
     for tagName in JSSSShiv.tagNames
       this[tagName] = new JSSSThing "#{tagName}.#{className}", style
+      this[tagName.toUpperCase()] = new JSSSThing "#{tagName}.#{className}", style
     this.all = new JSSSThing ".#{className}", style
 
 class JSSSId extends JSSSThing
@@ -175,3 +176,5 @@ stylings = (defineProperty, defineMethod) ->
   defineProperty 'display', (value) -> "display: #{value}"
   defineProperty 'listStyle', (value) -> "list-style: #{value}"
   defineProperty 'whiteSpace', (value) -> "white-space: #{value}"
+
+document.addEventListener "DOMContentLoaded", JSSSShiv.run

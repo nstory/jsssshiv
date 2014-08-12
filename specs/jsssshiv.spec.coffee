@@ -120,6 +120,12 @@ describe 'JSSS Shiv', ->
     expect(getCSS 'a', 'color').toBe 'rgb(0, 0, 255)'
     expect(getCSS 'b', 'color').toBe 'rgb(255, 0, 0)'
 
+  it 'class.TAG selector', ->
+    givenHTML '<h1 id="a" class="foo">Foo</h1>'
+    JSSSShiv.eval ->
+      document.classes.foo.H1.color = "blue"
+    expect(getCSS 'a', 'color').toBe 'rgb(0, 0, 255)'
+
   it 'supports id as selector', ->
     givenHTML '<h1 id="a">Foo</h1>'
     JSSSShiv.eval ->
