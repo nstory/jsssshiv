@@ -1,25 +1,36 @@
 module.exports = (grunt) ->
   grunt.initConfig
     clean:
-      build: ['build']
+      build: ['lib']
+      test: ['tmp']
 
     coffee:
+      options:
+        sourceMap: true
       build:
-        options:
-          sourceMap: true
         files: [
           expand: true
           ext: '.js'
           extDot: 'last'
-          src: ['src/**.coffee', 'specs/**.coffee']
-          dest: 'build/'
+          cwd: 'src/'
+          src: ['**.coffee']
+          dest: 'lib/'
+        ]
+      test:
+        files: [
+          expand: true
+          ext: '.js'
+          extDot: 'last'
+          cwd: 'specs/'
+          src: ['**.coffee']
+          dest: 'tmp/'
         ]
 
     jasmine:
       test:
-        src: ['build/src/*.js']
+        src: ['lib/*.js']
         options:
-          specs: ['build/specs/*.spec.js']
+          specs: ['tmp/*.spec.js']
 
     watch:
       options:
@@ -33,6 +44,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-jasmine'
   grunt.loadNpmTasks 'grunt-contrib-watch'
 
-  grunt.registerTask 'test', ['build', 'jasmine']
-  grunt.registerTask 'build', ['clean', 'coffee']
+  grunt.registerTask 'test', ['clean:test', 'build', 'coffee:test', 'jasmine']
+  grunt.registerTask 'build', ['clean:build', 'coffee:build']
   grunt.registerTask 'default', ['build']
