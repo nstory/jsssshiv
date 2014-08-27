@@ -1,10 +1,36 @@
 # JSSS Shiv
-This is a shiv, an improvised implement for doing violence upon a web browser. In this case, that violence is [JSSS](http://www.w3.org/Submission/1996/1/WD-jsss-960822).
+This is a shiv, an improvised implement for doing violence upon a web browser. In this case, that violence is [JavaScript-based Style Sheets](http://www.w3.org/Submission/1996/1/WD-jsss-960822).
 
 ## Introduction
 JSSS (JavaScript-based Style Sheets) was an alternative to CSS proposed by Netscape in the days of the early web. The only browser to implement it was Netscape 4.
 
 This project is a polyfill allowing JSSS to be used in a modern browser. Basically, it converts JSSS into CSS.
+
+## Installation
+Use [Bower](http://bower.io):
+```bash
+$ bower install --save 'https://github.com/nstory/jsssshiv.git#master'
+```
+
+## Usage
+Add a `<script>` tag referencing `jsssshiv.js` to your page. The script will automatically interpret any JavaScript-based Style Sheets referenced:
+```html
+<script type="text/javascript" src="path/to/jsssshiv.js"></script>
+
+<!-- NOTE: we are using a _style_ tag here! -->
+<style type="text/javascript">
+(function() {
+  var i, tag;
+  for (i = 1; i <= 6; i++) {
+    tag = 'H' + i;
+    document.tags[tag].fontSize = (42 - i*6) + 'px';
+    document.tags[tag].color = 'blue';
+  }
+})();
+</style>
+```
+
+See [the spec](http://www.w3.org/Submission/1996/1/WD-jsss-960822) for more usage information.
 
 ## Limitations
 ### Classes and IDs
